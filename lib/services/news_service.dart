@@ -16,7 +16,9 @@ class NewsService {
   List<ArticleModel> articlesList = [];
   for (var a in articles) {
     ArticleModel model = ArticleModel.fromJson(a);
-    articlesList.add(model);
+    if(model.title != '[Removed]') {
+      articlesList.add(model);
+    }
   }
   return articlesList;
   } on Exception catch (e) {

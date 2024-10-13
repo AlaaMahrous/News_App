@@ -22,17 +22,17 @@ class _WebViewExampleState extends State<WebViewExample> {
         NavigationDelegate(
           onPageStarted: (String url) {
             setState(() {
-              isLoading = true; // عند بدء التحميل
+              isLoading = true;
             });
           },
           onPageFinished: (String url) {
             setState(() {
-              isLoading = false; // عند انتهاء التحميل
+              isLoading = false;
             });
           },
           onWebResourceError: (WebResourceError error) {
             setState(() {
-              isLoading = false; // إيقاف التحميل عند حدوث خطأ
+              isLoading = false; 
             });
           },
         ),
