@@ -12,6 +12,7 @@ class WebViewExample extends StatefulWidget {
 class _WebViewExampleState extends State<WebViewExample> {
   late final WebViewController _controller;
   bool isLoading = true; 
+  bool hasError = false; 
 
   @override
   void initState() {
@@ -23,6 +24,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           onPageStarted: (String url) {
             setState(() {
               isLoading = true;
+              hasError = false; 
             });
           },
           onPageFinished: (String url) {
@@ -32,7 +34,8 @@ class _WebViewExampleState extends State<WebViewExample> {
           },
           onWebResourceError: (WebResourceError error) {
             setState(() {
-              isLoading = false; 
+              isLoading = false;
+              hasError = true;
             });
           },
         ),
@@ -40,25 +43,43 @@ class _WebViewExampleState extends State<WebViewExample> {
       ..loadRequest(Uri.parse(widget.webUrl));
   }
 
+  void _reloadPage() {
+    setState(() {
+      isLoading = true;
+      hasError = false; 
+    });
+    _controller.loadRequest(Uri.parse(widget.webUrl));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        centerTitle: true,
-        title: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('News', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-            Text('Cloud', style: TextStyle(color: Color.fromARGB(255, 255, 192, 98), fontWeight: FontWeight.bold)),
-          ]
-        ),
-      ),
       body: Stack(
         children: [
-          WebViewWidget(controller: _controller),
-          if (isLoading) 
-            const Center(
-              child: CircularProgressIndicator(),
+          Offstage(
+            offstage: isLoading || hasError, 
+            child: WebViewWidget(controller: _controller),
+          ),
+          if (isLoading)
+            const Center(child: CircularProgressIndicator()),
+          if (hasError) 
+            Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.error, size: 50, color: Colors.red),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'An error occurred while loading the page',
+                    style: TextStyle(fontSize: 18),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _reloadPage,
+                    child: const Text('Try again'),
+                  ),
+                ],
+              ),
             ),
         ],
       ),
